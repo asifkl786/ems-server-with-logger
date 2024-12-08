@@ -31,9 +31,9 @@ public class EmployeeServiceImple implements EmployeeService  {
 	@Override
 	public EmployeeDto addEmployee(EmployeeDto employeeDto) {
 		logger.info("Creating Employee: {}", employeeDto);
-		Employee employee = EmployeeMapper.mapToEmployee(employeeDto);
+		Employee employee = EmployeeMapper.toEntity(employeeDto);
         Employee savedEmployee = employeeRepository.save(employee);
-        return EmployeeMapper.mapToEmployeeDto(savedEmployee);
+        return EmployeeMapper.toDto(savedEmployee);
 	}
     
 	// Get Employee By Id
