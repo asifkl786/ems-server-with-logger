@@ -93,7 +93,7 @@ public class EmployeeServiceImple implements EmployeeService  {
 		logger.info("Search Employee with ID: {}", query);
 		 List<Employee> employees = employeeRepository.SearchEmployee(query);
 
-	        return employees.stream().map((x) -> EmployeeMapper.mapToEmployeeDto(x))
+	        return employees.stream().map((obj) -> EmployeeMapper.mapToEmployeeDto(obj))
 	                .collect(Collectors.toUnmodifiableList());
 	}
 	
