@@ -30,18 +30,18 @@ public class EmployeeServiceImple implements EmployeeService  {
 	// Add Employee 
 	@Override
 	public EmployeeDto addEmployee(EmployeeDto employeeDto) {
-		logger.info("Creating Employee: {}", employeeDto);
 		Employee employee = EmployeeMapper.toEntity(employeeDto);
         Employee savedEmployee = employeeRepository.save(employee);
+        logger.info("{} :: Employee Successfully Created", employeeDto.getFirstName());
         return EmployeeMapper.toDto(savedEmployee);
 	}
     
 	// Get Employee By Id
 	@Override
 	public EmployeeDto getEmployeeById(Long id) {
-		logger.info("Fetching Employee with ID: {}", id);
 		 Employee employee = employeeRepository.findById(id)
 	                .orElseThrow(() -> new ResourceNotFoundException("Employee is not exists with given id" + id));
+		 logger.info("Employee Successfully Fetch with ID: {}", id);
 	        return EmployeeMapper.mapToEmployeeDto(employee);
 	}
     
@@ -49,8 +49,8 @@ public class EmployeeServiceImple implements EmployeeService  {
 	// Get All Employee 
 	@Override
 	public List<EmployeeDto> getAllEmployees() {
-		 logger.info("Fetching all Employee");
 		 List<Employee> employees = employeeRepository.findAll();
+		 logger.info("{}:: Employee Successfully fetch ",employees.size());
 	        return employees.stream().map(EmployeeMapper::mapToEmployeeDto)
 	                .collect(Collectors.toUnmodifiableList());
 	}
@@ -59,7 +59,6 @@ public class EmployeeServiceImple implements EmployeeService  {
 	// Update Employee By Id
 	@Override
 	public EmployeeDto updateEmployee(Long id, EmployeeDto employeeDto) {
-		logger.info("Updating Employee with ID: {}", id);
 		// get employee from the repository
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee is not exists with given id" + id));
@@ -74,25 +73,24 @@ public class EmployeeServiceImple implements EmployeeService  {
         employee.setPicture(employeeDto.getPicture());
         // save employee in the repository
         Employee updatedEmployee = employeeRepository.save(employee);
+        logger.info("{}:: Employee Successfully Updated",updatedEmployee.getFirstName());
         return EmployeeMapper.mapToEmployeeDto(updatedEmployee);
 	}
     
 	// Delete Employee By Id 
 	@Override
 	public void deleteEmployee(Long id) {
-		logger.info("Deleting Employee with ID: {}", id);
 		 Employee employee = employeeRepository.findById(id)
 	                .orElseThrow(() -> new ResourceNotFoundException("Employee is not exists with given id" + id));
 	        employeeRepository.deleteById(id);
-		
+	        logger.info("Employee Successfully delete with ID: {}", id);
 	}
 
 	// Search Employee By Id
 	@Override
 	public List<EmployeeDto> SearchEmployee(String query) {
-		logger.info("Search Employee with ID: {}", query);
 		 List<Employee> employees = employeeRepository.SearchEmployee(query);
-
+		 logger.info("Successfully Search Employee with ID: {}", query);
 	        return employees.stream().map((emp) -> EmployeeMapper.mapToEmployeeDto(emp))
 	                .collect(Collectors.toUnmodifiableList());
 	}

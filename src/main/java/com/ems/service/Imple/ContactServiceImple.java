@@ -29,18 +29,18 @@ public class ContactServiceImple implements ContactService {
     // Add Contact
 	@Override
 	public ContactDto addContact(ContactDto contactDto) {
-		logger.info("Creating Contact: {}", contactDto);
         ContactUs contactus = ContactMapper.convertToEntity(contactDto);
         ContactUs savedContact = contactUsRepository.save(contactus);
+        logger.info("{}:: Successfully Create Contact", contactDto.getName());
 		return ContactMapper.convertToDTO(savedContact);
 	}
 
 	// Get Contact By Id
 	@Override
-	public ContactDto getContactById(Long id) {
-		logger.info("Fetching Contact with ID: {}", id);
+	public ContactDto getContactById(Long id) {	
        ContactUs contact = contactUsRepository.findById(id)
     		   .orElseThrow(() -> new ResourceNotFoundException("contact is not exists with given id" + id));
+       logger.info("Successfully Fetch Contact with ID: {}", id);
 		return ContactMapper.convertToDTO(contact);
 	}
 
@@ -56,9 +56,10 @@ public class ContactServiceImple implements ContactService {
 	// Get All Contact
 	@Override 
 	  public List<ContactDto> getAllContact(int page, int size) { 
-		logger.info("Fetching all Contact");
+		
            Page<ContactUs> pageContact = contactUsRepository.findAll(PageRequest.of(page, size));
            List<ContactUs> allContact = pageContact.getContent();
+           logger.info("{} :: Fetching all Contact",allContact.size());
 	        return allContact.stream().map(ContactMapper::convertToDTO).collect(Collectors.toList()); 
 	  }
 	 
@@ -66,10 +67,10 @@ public class ContactServiceImple implements ContactService {
 	// Delete Contact 
 	@Override
 	public void deleteContact(Long id) {
-		logger.info("Deleting Contact with ID: {}", id);
 		 ContactUs contact = contactUsRepository.findById(id)
 	                .orElseThrow(() -> new ResourceNotFoundException("Employee is not exists with given id" + id));
 	        contactUsRepository.deleteById(id);
+	        logger.info("Successfully Delete Contact with ID: {}", id);
 		
 	}
 
@@ -77,8 +78,8 @@ public class ContactServiceImple implements ContactService {
 	// Search Contact By query
 	@Override
 	public List<ContactDto> SearchContact(String query) {
-		logger.info("Search Contact with ID: {}", query);
 	   List<ContactUs> contact = contactUsRepository.SearchContact(query);
+	   logger.info("Successfully Search Contact with ID: {}", query);
 		return contact.stream().map((x) -> ContactMapper.convertToDTO(x)).collect(Collectors.toList());
 	}
 
@@ -86,7 +87,6 @@ public class ContactServiceImple implements ContactService {
 	// Update Contact By Id
 	@Override
 	public ContactDto updateContact(Long id, ContactDto contactDto) {
-		logger.info("Updating Contact with ID: {}", id);
 		 ContactUs contact = contactUsRepository.findById(id)
 	    		   .orElseThrow(() -> new ResourceNotFoundException("contact is not exists with given id" + id));
 		 contact.setName(contactDto.getName());
@@ -97,6 +97,7 @@ public class ContactServiceImple implements ContactService {
 		 
 		// save employee in the repository
 	         ContactUs updatedContact = contactUsRepository.save(contact);
+	         logger.info("Successfully Update Contact with ID: {}", id);
 	         return ContactMapper.convertToDTO(updatedContact);
 	}
 
