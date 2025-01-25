@@ -1,6 +1,10 @@
 package com.ems.controller;
 
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -11,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ems.dto.EmployeeDto;
 import com.ems.service.EmployeeService;
@@ -33,13 +39,35 @@ public class EmployeeController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
 	
+	public static String uploadDirectory = System.getProperty("user.dir") + "/src/main/resources/static";
+	
 	@Autowired
 	private EmployeeService employeeService;
 
     // Build addEmployee REST API
+	/*
     @PostMapping
     public ResponseEntity<EmployeeDto> addEmployee(@RequestBody EmployeeDto employeeDto) {
-    	logger.info("Received request to create Employee: {}", employeeDto);
+    	logger.info("Received request to create Employee Whose Name : {}", employeeDto.getFirstName());
+        EmployeeDto savedEmployee = employeeService.addEmployee(employeeDto);
+        return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
+    } */
+	
+	 // Build addEmployee REST API
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<EmployeeDto> addEmployee(@ModelAttribute EmployeeDto employeeDto, @RequestParam("file") MultipartFile file) throws IOException {
+    	// Log file name
+    	logger.info("Received request to create Employee Whose Name : {}", employeeDto.getFirstName());
+    	
+    	// Save the uploaded file
+    	String orignalFileName = file.getOriginalFilename();
+		Path fileNameAndPath = Paths.get(uploadDirectory,orignalFileName);
+		Files.write(fileNameAndPath, file.getBytes());
+		
+		// Set picture field in EmployeeDto
+		employeeDto.setPicture(orignalFileName);
+		
+		// Save employee
         EmployeeDto savedEmployee = employeeService.addEmployee(employeeDto);
         return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
     }
