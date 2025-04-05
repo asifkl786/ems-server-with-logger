@@ -54,8 +54,9 @@ public class EmployeeController {
     } */
 	
 	 // Build addEmployee REST API
-    @PostMapping(consumes = "multipart/form-data")
-    public ResponseEntity<EmployeeDto> addEmployee(@ModelAttribute EmployeeDto employeeDto, @RequestParam("file") MultipartFile file) throws IOException {
+    @PostMapping
+    public ResponseEntity<EmployeeDto> addEmployee(
+    		@ModelAttribute("employeeDto") EmployeeDto employeeDto, @RequestParam("file") MultipartFile file) throws IOException {
     	// Log file name
     	logger.info("Received request to create Employee Whose Name : {}", employeeDto.getFirstName());
     	

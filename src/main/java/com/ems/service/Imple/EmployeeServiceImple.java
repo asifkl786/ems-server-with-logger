@@ -42,7 +42,7 @@ public class EmployeeServiceImple implements EmployeeService  {
 		 Employee employee = employeeRepository.findById(id)
 	                .orElseThrow(() -> new ResourceNotFoundException("Employee is not exists with given id" + id));
 		 logger.info("Employee Successfully Fetch with ID: {}", id);
-	        return EmployeeMapper.mapToEmployeeDto(employee);
+	        return EmployeeMapper.toDto(employee);
 	}
     
 	
@@ -51,7 +51,7 @@ public class EmployeeServiceImple implements EmployeeService  {
 	public List<EmployeeDto> getAllEmployees() {
 		 List<Employee> employees = employeeRepository.findAll();
 		 logger.info("{}:: Employee Successfully fetch ",employees.size());
-	        return employees.stream().map(EmployeeMapper::mapToEmployeeDto)
+	        return employees.stream().map(EmployeeMapper::toDto)
 	                .collect(Collectors.toUnmodifiableList());
 	}
     
@@ -74,7 +74,7 @@ public class EmployeeServiceImple implements EmployeeService  {
         // save employee in the repository
         Employee updatedEmployee = employeeRepository.save(employee);
         logger.info("{}:: Employee Successfully Updated",updatedEmployee.getFirstName());
-        return EmployeeMapper.mapToEmployeeDto(updatedEmployee);
+        return EmployeeMapper.toDto(updatedEmployee);
 	}
     
 	// Delete Employee By Id 
@@ -91,7 +91,7 @@ public class EmployeeServiceImple implements EmployeeService  {
 	public List<EmployeeDto> SearchEmployee(String query) {
 		 List<Employee> employees = employeeRepository.SearchEmployee(query);
 		 logger.info("Successfully Search Employee with ID: {}", query);
-	        return employees.stream().map((emp) -> EmployeeMapper.mapToEmployeeDto(emp))
+	        return employees.stream().map((emp) -> EmployeeMapper.toDto(emp))
 	                .collect(Collectors.toUnmodifiableList());
 	}
 	
