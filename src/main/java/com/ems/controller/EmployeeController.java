@@ -68,7 +68,7 @@ public class EmployeeController {
 		// Set picture field in EmployeeDto
 		employeeDto.setPicture(orignalFileName);
 		
-		// Save employee
+		// Call employeeService 
         EmployeeDto savedEmployee = employeeService.addEmployee(employeeDto);
         return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
     }
@@ -90,10 +90,15 @@ public class EmployeeController {
     }
     
    // Build Update employee
-    @PutMapping("{id}")
-    public ResponseEntity<EmployeeDto> updateEmployee(@PathVariable("id") Long id, @RequestBody EmployeeDto employeeDto) {
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    public ResponseEntity<EmployeeDto> updateEmployee(
+    		@PathVariable("id") Long id,
+            @ModelAttribute EmployeeDto employeeDto,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+    	
     	logger.info("Received request to update Employee with ID: {}", id);
-        EmployeeDto updatedEmployee = employeeService.updateEmployee(id, employeeDto);
+    	//employeeDto.setFile(file);
+        EmployeeDto updatedEmployee = employeeService.updateEmployee(id, employeeDto,file);
         return ResponseEntity.ok(updatedEmployee);
     }
     

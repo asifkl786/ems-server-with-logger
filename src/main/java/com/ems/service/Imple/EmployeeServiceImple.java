@@ -2,13 +2,18 @@ package com.ems.service.Imple;
 
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ems.dto.EmployeeDto;
 
@@ -17,15 +22,18 @@ import com.ems.exception.ResourceNotFoundException;
 import com.ems.mapper.EmployeeMapper;
 import com.ems.repository.EmployeeRepository;
 import com.ems.service.EmployeeService;
-import lombok.AllArgsConstructor;
+
 
 @Service
-@AllArgsConstructor
+//@AllArgsConstructor
 public class EmployeeServiceImple implements EmployeeService  {
 	private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImple.class);
 	
 	@Autowired
 	private EmployeeRepository employeeRepository;
+	
+	@Value("${upload.directory}")
+    private String uploadDir;
     
 	// Add Employee 
 	@Override
@@ -58,7 +66,7 @@ public class EmployeeServiceImple implements EmployeeService  {
 	
 	// Update Employee By Id
 	@Override
-	public EmployeeDto updateEmployee(Long id, EmployeeDto employeeDto) {
+	public EmployeeDto updateEmployee(Long id, EmployeeDto employeeDto,MultipartFile file) {
 		// get employee from the repository
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee is not exists with given id" + id));
@@ -70,7 +78,27 @@ public class EmployeeServiceImple implements EmployeeService  {
         employee.setCountry(employeeDto.getCountry());
         employee.setGender(employeeDto.getGender());
         employee.setDateofbirth(employeeDto.getDateofbirth());
-        employee.setPicture(employeeDto.getPicture());
+       // employee.setPicture(employeeDto.getPicture());
+        
+        if (file != null && !file.isEmpty()) {
+           // String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        	String fileName = file.getOriginalFilename();
+            File saveFile = new File(uploadDir + File.separator + fileName);
+            
+            // Ensure upload directory exists
+            File uploadPath = new File(uploadDir);
+            if (!uploadPath.exists()) {
+                uploadPath.mkdirs();
+            }
+            
+            try {
+                file.transferTo(saveFile);
+                employee.setPicture(fileName);
+            } catch (IOException e) {
+                throw new RuntimeException("File upload failed", e);
+            }
+        }
+        
         // save employee in the repository
         Employee updatedEmployee = employeeRepository.save(employee);
         logger.info("{}:: Employee Successfully Updated",updatedEmployee.getFirstName());
