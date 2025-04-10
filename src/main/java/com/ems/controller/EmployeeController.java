@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -97,9 +96,18 @@ public class EmployeeController {
             @RequestParam(value = "file", required = false) MultipartFile file) {
     	
     	logger.info("Received request to update Employee with ID: {}", id);
-    	//employeeDto.setFile(file);
         EmployeeDto updatedEmployee = employeeService.updateEmployee(id, employeeDto,file);
         return ResponseEntity.ok(updatedEmployee);
+    }
+    
+    // Build Create employee REST API
+    @PostMapping(value = "/create", consumes = "multipart/form-data")
+    public ResponseEntity<EmployeeDto> createEmployee(
+            @ModelAttribute EmployeeDto employeeDto,
+            @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+    	logger.info("Received request to create Employee with Name:: {}", employeeDto.getFirstName());
+        EmployeeDto createdEmployee = employeeService.createEmployee(employeeDto, file);
+        return new ResponseEntity<>(createdEmployee,HttpStatus.CREATED);
     }
     
     // Build Delete Employee REST API

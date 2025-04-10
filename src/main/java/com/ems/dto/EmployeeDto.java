@@ -1,7 +1,5 @@
 package com.ems.dto;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import lombok.Data;
 
 @Data
@@ -18,6 +16,6 @@ public class EmployeeDto {
 	    private String gender;
 	    private String country;
 	    private String picture;  // This will store the file name
-	    private MultipartFile file; // or call it picture, but make sure names match!
+	   // private MultipartFile file; // or call it picture, but make sure names match!
 
 }
