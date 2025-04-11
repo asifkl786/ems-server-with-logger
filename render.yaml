@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: ems-server
+    env: java
+    buildCommand: ./mvnw clean package
+    startCommand: java -jar target/ems-server-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: MYSQL_ADDON_HOST
+        sync: false
+      - key: MYSQL_ADDON_PORT
+        sync: false
+      - key: MYSQL_ADDON_DB
+        sync: false
+      - key: MYSQL_ADDON_USER
+        sync: false
+      - key: MYSQL_ADDON_PASSWORD
+        sync: false
+
+
