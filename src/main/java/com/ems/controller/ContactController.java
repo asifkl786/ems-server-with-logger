@@ -26,7 +26,8 @@ import com.ems.service.ContactService;
 
 import lombok.AllArgsConstructor;
 
-@CrossOrigin("*")
+//@CrossOrigin("*")
+@CrossOrigin(origins = "https://ems-curd.netlify.app")
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/contact")

@@ -16,7 +16,8 @@ import com.ems.service.UserService;
 
 import lombok.AllArgsConstructor;
 
-@CrossOrigin("*")
+//@CrossOrigin("*")
+@CrossOrigin(origins = "https://ems-curd.netlify.app")
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/user")

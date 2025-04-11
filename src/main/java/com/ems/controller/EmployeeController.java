@@ -30,7 +30,8 @@ import com.ems.service.EmployeeService;
 
 import lombok.AllArgsConstructor;
 
-@CrossOrigin("*")
+//@CrossOrigin("*")
+@CrossOrigin(origins = "https://ems-curd.netlify.app")
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/employees")
