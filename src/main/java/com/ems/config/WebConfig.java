@@ -1,3 +1,4 @@
+
 package com.ems.config;
 
 
@@ -25,9 +26,17 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("https://ems-curd.netlify.app") // ✅ Netlify domain
+                .allowedOrigins(
+                        "https://ems-curd-app.netlify.app", // ✅ your frontend URL
+                        "http://localhost:5173" // ✅ for local dev if needed
+                    )
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("*");
+                .allowedHeaders("*")
+                .allowCredentials(true); //  unless using cookies or auth
     }
 }
+
+
+
+
 
