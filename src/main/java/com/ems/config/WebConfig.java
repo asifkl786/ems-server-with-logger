@@ -31,7 +31,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "https://ems-curd-app.netlify.app", // ✅ your frontend URL
                         "http://localhost:5173" // ✅ for local dev if needed
                     )
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true); //  unless using cookies or auth
     }
