@@ -27,7 +27,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                        "https://candid-cuchufli-484d53.netlify.app",
                         "https://ems-curd-app.netlify.app", // ✅ your frontend URL
                         "http://localhost:5173" // ✅ for local dev if needed
                     )
