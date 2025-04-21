@@ -28,7 +28,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "https://ems-curd-app.netlify.app", // ✅ your frontend URL
-                        "http://localhost:5173" // ✅ for local dev if needed
+                        "http://localhost:5174",
+                        "http://localhost:5173"// ✅ for local dev if needed
                     )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")

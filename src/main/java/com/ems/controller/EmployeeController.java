@@ -2,14 +2,14 @@ package com.ems.controller;
 
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,40 +38,19 @@ public class EmployeeController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
 	
-	public static String uploadDirectory = System.getProperty("user.dir") + "/src/main/resources/static";
-	
 	@Autowired
 	private EmployeeService employeeService;
 
-    // Build addEmployee REST API
-	/*
-    @PostMapping
-    public ResponseEntity<EmployeeDto> addEmployee(@RequestBody EmployeeDto employeeDto) {
-    	logger.info("Received request to create Employee Whose Name : {}", employeeDto.getFirstName());
-        EmployeeDto savedEmployee = employeeService.addEmployee(employeeDto);
-        return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
-    } */
-	
-	 // Build addEmployee REST API
-    @PostMapping
-    public ResponseEntity<EmployeeDto> addEmployee(
-    		@ModelAttribute("employeeDto") EmployeeDto employeeDto, @RequestParam("file") MultipartFile file) throws IOException {
-    	// Log file name
-    	logger.info("Received request to create Employee Whose Name : {}", employeeDto.getFirstName());
-    	
-    	// Save the uploaded file
-    	String orignalFileName = file.getOriginalFilename();
-		Path fileNameAndPath = Paths.get(uploadDirectory,orignalFileName);
-		Files.write(fileNameAndPath, file.getBytes());
-		
-		// Set picture field in EmployeeDto
-		employeeDto.setPicture(orignalFileName);
-		
-		// Call employeeService 
-        EmployeeDto savedEmployee = employeeService.addEmployee(employeeDto);
-        return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
+	// Build Create employee REST API
+    @PostMapping(value = "/create", consumes = "multipart/form-data")
+    public ResponseEntity<EmployeeDto> createEmployee(
+            @ModelAttribute EmployeeDto employeeDto,
+            @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+    	logger.info("Received request to create Employee with Name:: {}", employeeDto.getFirstName());
+        EmployeeDto createdEmployee = employeeService.createEmployee(employeeDto, file);
+        return new ResponseEntity<>(createdEmployee,HttpStatus.CREATED);
     }
-    
+     
     // Build Get Employee By Id REST API
     @GetMapping("{id}")
     public ResponseEntity<EmployeeDto> getEmployeeById(@PathVariable("id") Long id) {
@@ -81,12 +60,13 @@ public class EmployeeController {
     }
     
    // Build GetAll All employee
+    /*
     @GetMapping
     public ResponseEntity<List<EmployeeDto>> getAllEmployees() {
     	logger.info("Received request to fetch all Employee");
         List<EmployeeDto> employeeDtoList = employeeService.getAllEmployees();
         return ResponseEntity.ok(employeeDtoList);
-    }
+    } */
     
    // Build Update employee
     @PutMapping(value = "/{id}", consumes = "multipart/form-data")
@@ -100,15 +80,6 @@ public class EmployeeController {
         return ResponseEntity.ok(updatedEmployee);
     }
     
-    // Build Create employee REST API
-    @PostMapping(value = "/create", consumes = "multipart/form-data")
-    public ResponseEntity<EmployeeDto> createEmployee(
-            @ModelAttribute EmployeeDto employeeDto,
-            @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
-    	logger.info("Received request to create Employee with Name:: {}", employeeDto.getFirstName());
-        EmployeeDto createdEmployee = employeeService.createEmployee(employeeDto, file);
-        return new ResponseEntity<>(createdEmployee,HttpStatus.CREATED);
-    }
     
     // Build Delete Employee REST API
     @DeleteMapping("{id}")
@@ -126,5 +97,23 @@ public class EmployeeController {
         return ResponseEntity.ok(searchEmployeeDtoList);
     }
     
+    // Build Get All Employee With Paginated Formate
+    @GetMapping("/paginated")
+    public ResponseEntity<Map<String, Object>> getPaginatedEmployees(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+    	logger.info("Received request to Fetch Employee with size: {}", size);
+        Page<EmployeeDto> employeePage = employeeService.getAllEmployeesWithPagination(page, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("employees", employeePage.getContent());
+        response.put("currentPage", employeePage.getNumber());
+        response.put("totalItems", employeePage.getTotalElements());
+        response.put("totalPages", employeePage.getTotalPages());
+
+        return ResponseEntity.ok(response);
+    }
+
     
 }

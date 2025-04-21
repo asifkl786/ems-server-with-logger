@@ -1,7 +1,5 @@
 package com.ems.service.Imple;
 
-
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,6 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,10 +41,9 @@ public class EmployeeServiceImple implements EmployeeService  {
 	//@Value("${upload.directory}")
     //private String uploadDir;
     
-	
+	// Ye teen line code directory me data save karne k liye
 	@Value("${upload.directory}")
 	private String uploadDirProp;
-
 	private Path uploadDir;
 
 	// ye jo method h ye employee update nahi ho raha tha 
@@ -59,14 +59,32 @@ public class EmployeeServiceImple implements EmployeeService  {
 	    }
 	}
 
-	// Add Employee 
+	// Create Employee chatgpt bala method
 	@Override
-	public EmployeeDto addEmployee(EmployeeDto employeeDto) {
-		Employee employee = EmployeeMapper.toEntity(employeeDto);
-        Employee savedEmployee = employeeRepository.save(employee);
-        logger.info("{} :: Employee Successfully Created", employeeDto.getFirstName());
-        return EmployeeMapper.toDto(savedEmployee);
+	public EmployeeDto createEmployee(EmployeeDto employeeDto, MultipartFile file) throws IOException {
+	    logger.info("{} :: Employee Try to Creating...", employeeDto.getFirstName());
+
+	    if (file != null && !file.isEmpty()) {
+	        // Ensure directory exists
+	        Files.createDirectories(uploadDir);
+
+	        // Create unique file name
+	        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+	        Path filePath = uploadDir.resolve(fileName);
+
+	        // Save file
+	        file.transferTo(filePath.toFile());
+
+	        // Set image name in DTO
+	        employeeDto.setPicture(fileName);
+	    }
+
+	    Employee employee = EmployeeMapper.toEntity(employeeDto);
+	    Employee createdEmployee = employeeRepository.save(employee);
+	    logger.info("{} :: Employee Successfully Created", createdEmployee.getFirstName());
+	    return EmployeeMapper.toDto(createdEmployee);
 	}
+
     
 	// Get Employee By Id
 	@Override
@@ -79,13 +97,14 @@ public class EmployeeServiceImple implements EmployeeService  {
     
 	
 	// Get All Employee 
+	/*
 	@Override
 	public List<EmployeeDto> getAllEmployees() {
 		 List<Employee> employees = employeeRepository.findAll();
 		 logger.info("{}:: Employee Successfully fetch ",employees.size());
 	        return employees.stream().map(EmployeeMapper::toDto)
 	                .collect(Collectors.toUnmodifiableList());
-	}
+	} */
     
 	
 	// Update Employee By Id
@@ -134,79 +153,6 @@ public class EmployeeServiceImple implements EmployeeService  {
 	    return EmployeeMapper.toDto(updatedEmployee);
 	}
 
-
-	// Create Employee 
-	/*
-		@Override
-		public EmployeeDto createEmployee(EmployeeDto employeeDto,MultipartFile file) throws IOException {
-			logger.info("{} :: Employee Try to Creating...", employeeDto.getFirstName());
-			// Save the uploaded file
-	    	String orignalFileName = file.getOriginalFilename();
-			Path fileNameAndPath = Paths.get(uploadDir,orignalFileName);
-			Files.write(fileNameAndPath, file.getBytes());
-			
-			// Set picture field in EmployeeDto
-			employeeDto.setPicture(orignalFileName);
-	        
-			
-			// This code for Directory created or not 
-	        if (file != null && !file.isEmpty()) {
-	            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-	        	//String fileName = file.getOriginalFilename();
-	            File saveFile = new File(uploadDir + File.separator + fileName);
-	            
-	            // Ensure upload directory exists
-	            File uploadPath = new File(uploadDir);
-	            if (!uploadPath.exists()) {
-	                uploadPath.mkdirs();
-	            }
-	            
-	            // File transfer code to directory
-	                try {
-						file.transferTo(saveFile);
-					} catch (IllegalStateException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	            
-	        }
-	        Employee employee = EmployeeMapper.toEntity(employeeDto);
-	        // save employee in the repository
-	        Employee createdEmployee = employeeRepository.save(employee);
-	        logger.info("{}:: Employee Successfully Created",createdEmployee.getFirstName());
-	        return EmployeeMapper.toDto(createdEmployee);
-		} */
-    
-	
-	// Create Employee chatgpt bala method
-	@Override
-	public EmployeeDto createEmployee(EmployeeDto employeeDto, MultipartFile file) throws IOException {
-	    logger.info("{} :: Employee Try to Creating...", employeeDto.getFirstName());
-
-	    if (file != null && !file.isEmpty()) {
-	        // Ensure directory exists
-	        Files.createDirectories(uploadDir);
-
-	        // Create unique file name
-	        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-	        Path filePath = uploadDir.resolve(fileName);
-
-	        // Save file
-	        file.transferTo(filePath.toFile());
-
-	        // Set image name in DTO
-	        employeeDto.setPicture(fileName);
-	    }
-
-	    Employee employee = EmployeeMapper.toEntity(employeeDto);
-	    Employee createdEmployee = employeeRepository.save(employee);
-	    logger.info("{} :: Employee Successfully Created", createdEmployee.getFirstName());
-	    return EmployeeMapper.toDto(createdEmployee);
-	}
-
 	// Delete Employee By Id 
 	@Override
 	public void deleteEmployee(Long id) {
@@ -223,6 +169,16 @@ public class EmployeeServiceImple implements EmployeeService  {
 		 logger.info("Successfully Search Employee with ID: {}", query);
 	        return employees.stream().map((emp) -> EmployeeMapper.toDto(emp))
 	                .collect(Collectors.toUnmodifiableList());
+	}
+	
+	// get All employee with pagination formate 
+
+	@Override
+	public Page<EmployeeDto> getAllEmployeesWithPagination(int page, int size) {
+		logger.info("{}:: Employee Successfully fetch ",page,size);
+		Pageable pageable = PageRequest.of(page, size);
+	    Page<Employee> employeePage = employeeRepository.findAll(pageable);
+	    return employeePage.map(EmployeeMapper::toDto);
 	}
 	
 	
