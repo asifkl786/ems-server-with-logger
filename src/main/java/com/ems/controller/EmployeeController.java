@@ -97,15 +97,14 @@ public class EmployeeController {
         return ResponseEntity.ok(searchEmployeeDtoList);
     }
     
-    // Build Get All Employee With Paginated Formate
+    // Build REST API Get All Employee With Paginated format
     @GetMapping("/paginated")
     public ResponseEntity<Map<String, Object>> getPaginatedEmployees(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "4") int size
     ) {
     	logger.info("Received request to Fetch Employee with size: {}", size);
         Page<EmployeeDto> employeePage = employeeService.getAllEmployeesWithPagination(page, size);
-
         Map<String, Object> response = new HashMap<>();
         response.put("employees", employeePage.getContent());
         response.put("currentPage", employeePage.getNumber());
