@@ -2,7 +2,12 @@ package com.ems.exception;
 
 public class InvalidRequestException extends RuntimeException {
 
-	 public InvalidRequestException(String message) {
+	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public InvalidRequestException(String message) {
 	        super(message);
 	    }
 }
