@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//Purpose of This class Payloads for APIs
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ems.dto.DepartmentGroupDTO;
+import com.ems.dto.EmployeeDepartmentDistributionResponseDto;
 import com.ems.dto.EmployeeDto;
 import com.ems.service.EmployeeService;
 
@@ -60,13 +62,12 @@ public class EmployeeController {
     }
     
    // Build GetAll All employee
-    /*
-    @GetMapping
+    @GetMapping("/getAllEmployees")
     public ResponseEntity<List<EmployeeDto>> getAllEmployees() {
     	logger.info("Received request to fetch all Employee");
         List<EmployeeDto> employeeDtoList = employeeService.getAllEmployees();
         return ResponseEntity.ok(employeeDtoList);
-    } */
+    } 
     
    // Build Update employee
     @PutMapping(value = "/{id}", consumes = "multipart/form-data")
@@ -114,5 +115,29 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
+    // Build REST API Get Total Number of Employee 
+    @GetMapping("/totalEmployee")
+    public ResponseEntity<Long> getTotalNumberOfEmployees(){
+    	logger.info("Received request to get total number of Employees");
+    	long totalEmployees = employeeService.getTotalNumberOfEmployees();
+    	logger.info("{}::Employees Successfully Found",totalEmployees);
+    	return new ResponseEntity<>(totalEmployees,HttpStatus.OK);
+    }
     
+    // Build REST API for fetch grouping by data in department field
+    @GetMapping("/grouped-by-department")
+    public ResponseEntity<List<DepartmentGroupDTO>> getEmployeesGroupedByDepartment() {
+    	logger.info("Received request to get Employees as Grouped by Department");
+        List<DepartmentGroupDTO> response = employeeService.getGroupedEmployeesByDepartment();
+      //  return ResponseEntity.ok(response);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+    
+    // Build REST API for Department Distribution
+    @GetMapping("/department-distribution")
+    public ResponseEntity<List<EmployeeDepartmentDistributionResponseDto>> getEmployeeDepartmentDistribution(){
+    	 logger.info("Received request to get Employees as Grouped by Department");
+    	 List<EmployeeDepartmentDistributionResponseDto> response = employeeService.getEmployeeDepartmentDistribution();
+    	return new ResponseEntity<>(response,HttpStatus.OK);
+    }
 }

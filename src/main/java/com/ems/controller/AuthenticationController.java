@@ -16,6 +16,8 @@ import com.ems.dto.AuthenticationResponse;
 import com.ems.dto.RegisterRequest;
 import com.ems.service.Imple.AuthenticationService;
 
+
+// Purpose of This class Handles /register, /login APIs
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin("*")

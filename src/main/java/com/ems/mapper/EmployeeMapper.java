@@ -18,6 +18,7 @@ public class EmployeeMapper {
 		 employee.setCountry(employeeDto.getCountry());
 		 employee.setGender(employeeDto.getGender());
 		 employee.setPicture(employeeDto.getPicture());
+		 employee.setDepartment(employeeDto.getDepartment());
 		 return employee; 
 	 }
 	 
@@ -34,6 +35,7 @@ public class EmployeeMapper {
 		 employeeDto.setCountry(employee.getCountry());
 		 employeeDto.setGender(employee.getGender());
 		 employeeDto.setPicture(employee.getPicture());
+		 employeeDto.setDepartment(employee.getDepartment());
 		 return employeeDto;
 	 }
 }

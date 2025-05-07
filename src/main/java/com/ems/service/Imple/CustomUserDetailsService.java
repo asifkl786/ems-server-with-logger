@@ -13,6 +13,8 @@ import com.ems.entity.User;
 import com.ems.exception.ResourceNotFoundException;
 import com.ems.repository.UserRepository;
 
+
+// Purpose of This class  Load user by username/email
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 

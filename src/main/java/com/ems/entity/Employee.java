@@ -44,5 +44,8 @@ public class Employee {
 
     @Column(name = "picture")
     private String picture;
+    
+    @Column(name = "department")
+    private String department;
 	
 }

@@ -16,6 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.ems.service.Imple.CustomUserDetailsService;
 
+
+// Purpose This class Secures routes, defines filters
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {

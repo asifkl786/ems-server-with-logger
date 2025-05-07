@@ -8,6 +8,8 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 
+
+// Purpose of This class Enable CORS if frontend separate 
 @Configuration
 public class CorsConfig {
 

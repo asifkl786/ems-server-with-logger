@@ -17,6 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+// This class for Intercepts requests, checks JWT token
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 

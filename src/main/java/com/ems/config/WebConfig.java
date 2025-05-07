@@ -4,8 +4,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-// Ye Class isliye bnaye h kyuki picture ko serve karna tha 
-// Ya aise mano security apply karne k bad picture get nahi ho rahi thi
+
+// Purpose of this class Expose /uploads/** as static URL for accessing images publicly
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 

@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ems.dto.DepartmentGroupDTO;
+import com.ems.dto.EmployeeDepartmentDistributionResponseDto;
 import com.ems.dto.EmployeeDto;
 
 import com.ems.entity.Employee;
@@ -97,14 +101,12 @@ public class EmployeeServiceImple implements EmployeeService  {
     
 	
 	// Get All Employee 
-	/*
 	@Override
 	public List<EmployeeDto> getAllEmployees() {
 		 List<Employee> employees = employeeRepository.findAll();
 		 logger.info("{}:: Employee Successfully fetch ",employees.size());
-	        return employees.stream().map(EmployeeMapper::toDto)
-	                .collect(Collectors.toUnmodifiableList());
-	} */
+	        return employees.stream().map(EmployeeMapper::toDto).collect(toUnmodifiableList());
+	} 
     
 	
 	// Update Employee By Id
@@ -122,6 +124,7 @@ public class EmployeeServiceImple implements EmployeeService  {
 	    employee.setCountry(employeeDto.getCountry());
 	    employee.setGender(employeeDto.getGender());
 	    employee.setDateofbirth(employeeDto.getDateofbirth());
+	    employee.setDepartment(employeeDto.getDepartment());
 
 	    // File upload logic
 	    if (file != null && !file.isEmpty()) {
@@ -168,7 +171,7 @@ public class EmployeeServiceImple implements EmployeeService  {
 		 List<Employee> employees = employeeRepository.SearchEmployee(query);
 		 logger.info("Successfully Search Employee with ID: {}", query);
 	        return employees.stream().map((emp) -> EmployeeMapper.toDto(emp))
-	                .collect(Collectors.toUnmodifiableList());
+	                .collect(toUnmodifiableList());
 	}
 	
 	// get All employee with pagination formate 
@@ -180,6 +183,44 @@ public class EmployeeServiceImple implements EmployeeService  {
 	    Page<Employee> employeePage = employeeRepository.findAll(pageable);
 	    return employeePage.map(EmployeeMapper::toDto);
 	}
+
+	// Get Total Number of Employees
+	@Override
+	public long getTotalNumberOfEmployees() {
+		long totalNumberOfEmployee = employeeRepository.count();
+		logger.info("{}:: Employee Successfully fetch ",totalNumberOfEmployee);
+		return totalNumberOfEmployee;
+	}
 	
+	// Get Grouped by data for department
+	public List<DepartmentGroupDTO> getGroupedEmployeesByDepartment() {
+	    List<Employee> allEmployees = employeeRepository.findAll();
+	    logger.info("{}:: Employee Successfully fetch ",allEmployees.size());
+
+	    // Group safely using Optional to avoid null
+	    Map<String, List<Employee>> grouped = allEmployees.stream()
+	        .filter(emp -> emp.getDepartment() != null && !emp.getDepartment().isBlank())
+	        .collect(groupingBy(emp -> emp.getDepartment().toUpperCase()));
+
+	    // Desired department display order
+	    List<String> order = Arrays.asList("HR", "ADMIN", "TECH", "SALES", "SUPPORT");
+
+	    return order.stream()
+	        .filter(grouped::containsKey)
+	        .map(dept -> new DepartmentGroupDTO(dept, grouped.get(dept)))
+	        .collect(toList());
+	}
+
+	// This method fetch department distribution data 
+	@Override
+	public List<EmployeeDepartmentDistributionResponseDto> getEmployeeDepartmentDistribution() {
+		List<EmployeeDepartmentDistributionResponseDto> employeeGroupingByDepartment = employeeRepository.findGroupedByDepartment();
+		logger.info("{}:: Department Successfully fetch ",employeeGroupingByDepartment.size());
+		return employeeGroupingByDepartment;
+	}
+
+	
+	
+
 	
 }
