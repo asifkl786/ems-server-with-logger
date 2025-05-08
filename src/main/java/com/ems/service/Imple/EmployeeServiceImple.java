@@ -5,10 +5,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.TextStyle;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import static java.util.stream.Collectors.*;
 
 import org.slf4j.Logger;
@@ -24,7 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ems.dto.DepartmentGroupDTO;
 import com.ems.dto.EmployeeDepartmentDistributionResponseDto;
 import com.ems.dto.EmployeeDto;
-
+import com.ems.dto.EmployeeGrowthDTO;
 import com.ems.entity.Employee;
 import com.ems.exception.ResourceNotFoundException;
 import com.ems.mapper.EmployeeMapper;
@@ -203,7 +210,7 @@ public class EmployeeServiceImple implements EmployeeService  {
 	        .collect(groupingBy(emp -> emp.getDepartment().toUpperCase()));
 
 	    // Desired department display order
-	    List<String> order = Arrays.asList("HR", "ADMIN", "TECH", "SALES", "SUPPORT");
+	    List<String> order = Arrays.asList("HR", "ADMIN", "TECH", "SALES", "SUPPORT","FINANCE");
 
 	    return order.stream()
 	        .filter(grouped::containsKey)
@@ -218,9 +225,35 @@ public class EmployeeServiceImple implements EmployeeService  {
 		logger.info("{}:: Department Successfully fetch ",employeeGroupingByDepartment.size());
 		return employeeGroupingByDepartment;
 	}
+	
+	@Override
+	public List<EmployeeGrowthDTO> getMonthlyGrowth() {
+	    List<Employee> employees = employeeRepository.findAll();
 
-	
-	
+	    // Correct format: yyyy-MM-dd (e.g., 2025-04-23)
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
 
-	
+	    Map<String, Long> grouped = employees.stream()
+	        .filter(e -> e.getDateofbirth() != null && !e.getDateofbirth().isBlank())
+	        .collect(Collectors.groupingBy(e -> {
+	        	
+	        	try {
+	                LocalDate date = LocalDate.parse(e.getDateofbirth(), formatter);
+	                return date.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+	            } catch (DateTimeParseException ex) {
+	                logger.warn("Invalid date format: {}", e.getDateofbirth());
+	                return "Unknown";
+	            }
+	        }, Collectors.counting()));
+
+	    List<String> months = Arrays.asList("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+	                                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+
+	    logger.info("✅ Monthly growth data fetched: {}", grouped);
+
+	    return months.stream()
+	        .map(month -> new EmployeeGrowthDTO(month, grouped.getOrDefault(month, 0L)))
+	        .collect(Collectors.toList());
+	}
+
 }

@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ems.dto.DepartmentGroupDTO;
 import com.ems.dto.EmployeeDepartmentDistributionResponseDto;
 import com.ems.dto.EmployeeDto;
+import com.ems.dto.EmployeeGrowthDTO;
 import com.ems.service.EmployeeService;
 
 
@@ -102,7 +103,7 @@ public class EmployeeController {
     @GetMapping("/paginated")
     public ResponseEntity<Map<String, Object>> getPaginatedEmployees(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "4") int size
+            @RequestParam(defaultValue = "5") int size
     ) {
     	logger.info("Received request to Fetch Employee with size: {}", size);
         Page<EmployeeDto> employeePage = employeeService.getAllEmployeesWithPagination(page, size);
@@ -140,4 +141,13 @@ public class EmployeeController {
     	 List<EmployeeDepartmentDistributionResponseDto> response = employeeService.getEmployeeDepartmentDistribution();
     	return new ResponseEntity<>(response,HttpStatus.OK);
     }
+    
+    // Biild REST API for 
+    @GetMapping("/employee-growth")
+    public ResponseEntity<List<EmployeeGrowthDTO>> getMonthlyGrowth() {
+    	 logger.info("Received request to get Employees as Grouped by Month");
+        List<EmployeeGrowthDTO> growth = employeeService.getMonthlyGrowth();
+        return ResponseEntity.ok(growth);
+    }
+
 }

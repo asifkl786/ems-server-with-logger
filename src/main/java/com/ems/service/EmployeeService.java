@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ems.dto.DepartmentGroupDTO;
 import com.ems.dto.EmployeeDepartmentDistributionResponseDto;
 import com.ems.dto.EmployeeDto;
+import com.ems.dto.EmployeeGrowthDTO;
 
 public interface EmployeeService {
 	
@@ -22,6 +23,7 @@ public interface EmployeeService {
 	 List<EmployeeDto> SearchEmployee(String query);
 	 List<DepartmentGroupDTO> getGroupedEmployeesByDepartment(); 
 	 List<EmployeeDepartmentDistributionResponseDto> getEmployeeDepartmentDistribution();
+	 List<EmployeeGrowthDTO> getMonthlyGrowth();
 	 
 	 
 
